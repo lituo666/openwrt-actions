@@ -55,9 +55,32 @@ jobs:
           gzip *.txt
           ls -al
           echo 当前目录：$PWD
-      - name: 导出
+        
+      - name: Organize files
+        id: organize
+        run: |
+          cd openwrt/bin/targets/*/*
+          rm -rf packages
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          echo "::set-output name=status::success"
+    
+      - name: 安装到emmc脚本
+        id: emmc
+        if: steps.organize.outputs.status == 'success' && !cancelled()
+        run: |
+          git clone https://github.com/tuanqing/mknop
+          cp ${{ env.FIRMWARE }}/*.tar.gz mknop/openwrt/
+          cd mknop
+          sudo ./gen_openwrt -m phicomm-n1 -s 512
+          cd out/phicomm-n1
+          gzip *.img
+          echo "FIRMWARE_IMG=$PWD" >> $GITHUB_ENV
+          echo "::set-output name=status::success"
+
+      - name: Upload firmware directory
         uses: actions/upload-artifact@main
+        if: steps.emmc.outputs.status == 'success' && !cancelled()
         with:
-          name: OpenWrt_firmware${{ env.FILE_DATE }}
-          path: ${{ env.FIRMWARE }}
+          name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: ${{ env.FIRMWARE_IMG }}
           
