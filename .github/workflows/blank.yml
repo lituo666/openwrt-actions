@@ -37,15 +37,11 @@ jobs:
       
       - name: 添加目录
         run: |
-          sudo mkdir -p /workdir
-          ls
-          git clone https://github.com/lituo666/actions-test.git -b main testyong
-          ls
-          ln -sf /workdir/testyong $GITHUB_WORKSPACE/testyong
-          ls
-          cd /workdir/testyong/bin
-          ls
-          pwd
+          ls -al
+          echo 当前目录：$PWD
+          cd bin
+          ls -al
+          echo 当前目录：$PWD
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
       - name: 导出
         uses: actions/upload-artifact@main
