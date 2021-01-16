@@ -52,6 +52,8 @@ jobs:
         run: |
           echo 当前目录：$PWD
           cd ${{ env.FIRMWARE }}
+          gzip *.txt
+          ls -al
           echo 当前目录：$PWD
       - name: 导出
         uses: actions/upload-artifact@main
