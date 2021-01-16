@@ -43,6 +43,12 @@ jobs:
           ls -al
           echo 当前目录：$PWD
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+      
+      - name: 目录测试
+        run: |
+          echo 当前目录：$PWD
+          cd ${{ env.FIRMWARE }}
+          echo 当前目录：$PWD
       - name: 导出
         uses: actions/upload-artifact@main
         with:
