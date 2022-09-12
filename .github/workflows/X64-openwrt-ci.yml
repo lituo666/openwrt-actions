@@ -59,20 +59,21 @@ jobs:
           pwd
           ls -al
 
-      - name: Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
-
-      - name: Install feeds
-        run: cd openwrt && ./scripts/feeds install -a
+#      - name: Update feeds
+#        run: cd openwrt && ./scripts/feeds update -a
+#
+#      - name: Install feeds
+#        run: cd openwrt && ./scripts/feeds install -a
 
       - name: Load custom configuration
-        working-directory: $GITHUB_WORKSPACE/$DEVICE
         run: |
           pwd
-          [ -e $DEVICE/$CONFIG_FILE ] && cp $DEVICE/$CONFIG_FILE openwrt/.config
+          cd $DEVICE
+          pwd
+          [ -e $CONFIG_FILE ] && cp $CONFIG_FILE $GITHUB_WORKSPACE/openwrt/.config
           ls -al
-          chmod +x $DEVICE/$DIY_P2_SH
-          cd openwrt
+          chmod +x $DIY_P2_SH
+          cd $GITHUB_WORKSPACE/openwrt
           $GITHUB_WORKSPACE/$DEVICE/$DIY_P2_SH
           ls -al package
           make defconfig
