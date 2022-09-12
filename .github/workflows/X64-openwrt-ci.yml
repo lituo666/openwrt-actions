@@ -57,25 +57,25 @@ jobs:
           sudo timedatectl set-timezone "$TZ"
 
           df -h
-#          docker rmi `docker images -q`
-#          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-#          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
-#          sudo -E apt-get update
-#          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
-#          sudo -E apt-get -y autoremove --purge
-#          sudo -E apt-get clean
-#          df -h
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+          sudo -E apt-get update
+          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          df -h
 
       - name: Clone source code
         run: |
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH openwrt
 
-#      - name: Update feeds
-#        run: cd openwrt && ./scripts/feeds update -a
-#
-#      - name: Install feeds
-#        run: cd openwrt && ./scripts/feeds install -a
+      - name: Update feeds
+        run: cd openwrt && ./scripts/feeds update -a
+
+      - name: Install feeds
+        run: cd openwrt && ./scripts/feeds install -a
 
       - name: Load custom configuration
         run: |
@@ -85,275 +85,49 @@ jobs:
           cd openwrt
           bash $GITHUB_WORKSPACE/$DEVICE/$DIY_P2_SH
           ls -al package
-#          make defconfig
+          make defconfig
 
-#
-#      - name: Space cleanup
-#        env:
-#          DEBIAN_FRONTEND: noninteractive
-#        run: |
-#          docker rmi `docker images -q`
-#          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-#          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
-#          sudo -E apt-get update
-#          sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
-#          sudo -E apt-get -y autoremove --purge
-#          sudo -E apt-get clean
-#
-#          df -h
-#      - name: Clone source code
-#        run: |
-#          git clone https://github.com/coolsnowwolf/lede.git openwrt
-#          ls
-#          pwd
-#          cd openwrt
-#          ls
-#          pwd
-#          echo "======================="
-#          echo "Space usage:"
-#          echo "======================="
-#          df -h
-#          echo "======================="
-#      - name: Update feeds
-#        run: ./scripts/feeds update -a
-#
-#      - name: Install feeds
-#        run: ./scripts/feeds install -a
-#      
-#      - name: Add extra packages
-#        run: |
-#          git clone --depth=1 https://github.com/fw876/helloworld.git ./package/helloworld
-#          git clone --depth=1 https://github.com/vernesong/OpenClash.git ./package/luci-app-openclash
-#          git clone --depth=1 https://github.com/rufengsuixing/luci-app-adguardhome.git ./package/luci-app-adguardhome
-#          git clone --depth=1 https://github.com/destan19/OpenAppFilter.git ./package/OpenAppFilter
-#          git clone --depth=1 https://github.com/sbwml/luci-app-alist ./package/alist
-#          
-#      - name: Generate configuration file
-#        run: |
-#          cp ./X64.config.buildinfo .config
-#          make defconfig
-#
-#      - name: Make download
-#        run: |
-#          make download -j8
-#          find dl -size -1024c -exec rm -f {} \;
-#
-#      - name: Compile firmware
-#        run: |
-#          make -j$(nproc) || make -j1 V=s
-#          echo "======================="
-#          echo "Space usage:"
-#          echo "======================="
-#          df -h
-#          echo "======================="
-#          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-#          du -h --max-depth=1 ./build_dir
-#          du -h --max-depth=1 ./bin
-#
-#      - name: Prepare artifact
-#        run: |
-#          mkdir -p ./artifact/firmware
-#          mkdir -p ./artifact/package
-#          mkdir -p ./artifact/buildinfo
-#          rm -rf $(find ./bin/targets/ -type d -name "packages")
-#          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
-#          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
-#          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
-#
-#      - name: Deliver buildinfo
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: OpenWrt_buildinfo
-#          path: ./artifact/buildinfo/
-#
-#      - name: Deliver package
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: OpenWrt_package
-#          path: ./artifact/package/
-#
-#      - name: Deliver firmware
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: OpenWrt_firmware
-#          path: ./bin/targets/
+      - name: Make download
+        run: |
+          make download -j8
+          find dl -size -1024c -exec rm -f {} \;
 
+      - name: Compile firmware
+        run: |
+          make -j$(nproc) || make -j1 V=s
+          echo "======================="
+          echo "Space usage:"
+          echo "======================="
+          df -h
+          echo "======================="
+          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
+          du -h --max-depth=1 ./build_dir
+          du -h --max-depth=1 ./bin
 
-#
-# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
-#
+      - name: Prepare artifact
+        run: |
+          mkdir -p ./artifact/firmware
+          mkdir -p ./artifact/package
+          mkdir -p ./artifact/buildinfo
+          rm -rf $(find ./bin/targets/ -type d -name "packages")
+          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
+          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
-#name: X64-openwrt-ci
-#
-#on:
-#  workflow_dispatch
-#  push
-#
+      - name: Deliver buildinfo
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_buildinfo
+          path: ./artifact/buildinfo/
 
-#
-#jobs:
-#  build_openwrt:
-#
-#    permissions:
-#      contents: write # for release creation
-#
-#    name: Build OpenWrt firmware
-#    runs-on: ubuntu-latest  # 运行所需要的虚拟机环境
-#
-#    steps:
-#    
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#        with:
-#          ref: main
+      - name: Deliver package
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_package
+          path: ./artifact/package/
 
-#      - name: Initialization environment
-#        env:
-#          DEBIAN_FRONTEND: noninteractive
-#        run: |
-##        docker rmi `docker images -q`
-##        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-##        sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
-##        sudo -E apt-get update
-##        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
-##        sudo -E apt-get -y autoremove --purge
-##        sudo -E apt-get clean
-#
-#          sudo timedatectl set-timezone "$TZ"
-#
-#      - name: Clone source code
-#        run: |
-#          df -hT $PWD
-#          git clone $REPO_URL -b $REPO_BRANCH openwrt
-#          pwd
-#          ls -al
-#
-#      - name: Load custom feeds
-#        run: |
-#          [ -e $DEVICE/$FEEDS_CONF ] && cp $DEVICE/$FEEDS_CONF openwrt/feeds.conf.default
-#          chmod +x $DIY_P1_SH
-#          cd openwrt
-#          $GITHUB_WORKSPACE/$DEVICE/$DIY_P1_SH
-#          pwd
-#
-#      - name: Update feeds
-#        run: cd openwrt && ./scripts/feeds update -a
-#
-#      - name: Install feeds
-#        run: cd openwrt && ./scripts/feeds install -a
-#
-#      - name: Load custom configuration
-#        working-directory: $GITHUB_WORKSPACE/$DEVICE
-#        run: |
-#          pwd
-#          [ -e $DEVICE/$CONFIG_FILE ] && cp $DEVICE/$CONFIG_FILE openwrt/.config
-#          ls -al
-#          chmod +x $DEVICE/$DIY_P2_SH
-#          cd openwrt
-#          $GITHUB_WORKSPACE/$DEVICE/$DIY_P2_SH
-#          ls -al package
-#          make defconfig
-
-#    - name: Download package
-#      id: package
-#      run: |
-#        cd openwrt
-#        make download -j8
-#        find dl -size -1024c -exec rm -f {} \;
-#
-#    - name: Compile the firmware
-#      id: compile
-#      run: |
-#        cd openwrt
-#        echo -e "$(nproc) thread compile"
-#        make -j$(nproc) || make -j1 || make -j1 V=s
-#        echo "::set-output name=status::success"
-#        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-#        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-#        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-#
-#    - name: Check space usage
-#      if: (!cancelled())
-#      run: df -hT
-#
-#    - name: Upload bin directory
-#      uses: actions/upload-artifact@main
-#      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-#      with:
-#        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-#        path: openwrt/bin
-#
-#    - name: Organize files
-#      id: organize
-#      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-#      run: |
-#        cd openwrt/bin/targets/*/*
-#        rm -rf packages
-#        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-#        echo "::set-output name=status::success"
-#
-#    - name: Upload firmware directory
-#      uses: actions/upload-artifact@main
-#      if: steps.organize.outputs.status == 'success' && !cancelled()
-#      with:
-#        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-#        path: ${{ env.FIRMWARE }}
-#
-#    - name: Upload firmware to cowtransfer
-#      id: cowtransfer
-#      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-#      run: |
-#        curl -fsSL git.io/file-transfer | sh
-#        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-#        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-#        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-#
-#    - name: Upload firmware to WeTransfer
-#      id: wetransfer
-#      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-#      run: |
-#        curl -fsSL git.io/file-transfer | sh
-#        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-#        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-#        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-#
-#    - name: Generate release tag
-#      id: tag
-#      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-#      run: |
-#        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
-#        touch release.txt
-#        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-#        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-#        echo "::set-output name=status::success"
-#
-#    - name: Upload firmware to release
-#      uses: softprops/action-gh-release@v1
-#      if: steps.tag.outputs.status == 'success' && !cancelled()
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      with:
-#        tag_name: ${{ steps.tag.outputs.release_tag }}
-#        body_path: release.txt
-#        files: ${{ env.FIRMWARE }}/*
-#
-#    - name: Delete workflow runs
-#      uses: GitRML/delete-workflow-runs@main
-#      with:
-#        retain_days: 1
-#        keep_minimum_runs: 3
-#
-#    - name: Remove old Releases
-#      uses: dev-drprasad/delete-older-releases@v0.1.0
-#      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-#      with:
-#        keep_latest: 3
-#        delete_tags: true
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deliver firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: ./bin/targets/
