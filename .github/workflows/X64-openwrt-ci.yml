@@ -132,8 +132,8 @@
 name: X64-openwrt-ci
 
 on:
-  workflow_dispatch:
-  push:
+  workflow_dispatch
+  push
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
