@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2020 KFERMercer
 #
-name: X64-openwrt-ci
+name: R68S-openwrt-ci
 
 on:
   workflow_dispatch:
@@ -14,8 +14,8 @@ on:
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
-  DEVICE: X64
-  CONFIG_FILE: X64.config.buildinfo
+  DEVICE: R68S
+  CONFIG_FILE: R68S.config.buildinfo
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
