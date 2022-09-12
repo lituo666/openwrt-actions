@@ -9,6 +9,7 @@ name: X64-openwrt-ci
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
 
