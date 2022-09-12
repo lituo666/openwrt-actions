@@ -82,6 +82,7 @@ jobs:
           cp $DEVICE/$CONFIG_FILE $GITHUB_WORKSPACE/openwrt/.config
           ls -al
           chmod +x $DEVICE/$DIY_P2_SH
+          cd openwrt
           bash $GITHUB_WORKSPACE/$DEVICE/$DIY_P2_SH
           ls -al package
 #          make defconfig
