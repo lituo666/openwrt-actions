@@ -26,7 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: master
+          ref: main
 
       - name: Space cleanup
         env:
@@ -49,7 +49,11 @@ jobs:
           cd openwrt
           ls
           pwd
-          
+          echo "======================="
+          echo "Space usage:"
+          echo "======================="
+          df -h
+          echo "======================="
 #      - name: Update feeds
 #        run: ./scripts/feeds update -a
 #
