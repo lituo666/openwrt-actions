@@ -1,20 +1,10 @@
-name: remote ssh command
-on: 
-  workflow_dispatch:
+name: Ubuntu
+on:
+  watch:
+    types: started
 jobs:
-
-  build:
-    name: Build
+  Ubuntu:
     runs-on: ubuntu-latest
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        script: whoami
-    - name: ceui
-      run: |
-        pwd
-        whoami
+    - name: SSH connection to Actions
+      uses: P3TERX/debugger-action@master
