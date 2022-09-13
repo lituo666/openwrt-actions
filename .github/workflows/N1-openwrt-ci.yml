@@ -16,6 +16,7 @@ env:
   REPO_BRANCH: master
   DEVICE: N1
   CONFIG_FILE: N1.config.buildinfo
+  KERNEL_VERSION: 5.15.67-flippy-76+o # 打包时的内核版本
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
@@ -45,10 +46,10 @@ jobs:
           [ -e $DEVICE/$CONFIG_FILE ]
           [ -e $DEVICE/$DIY_P1_SH ]
           [ -e $DEVICE/$DIY_P2_SH ]
-          [ -e $DEVICE/boot-5.15.67-flippy-76+o.tar.gz ]
-          [ -e $DEVICE/dtb-amlogic-5.15.67-flippy-76+o.tar.gz ]
-          [ -e $DEVICE/header-5.15.67-flippy-76+o.tar.gz ]
-          [ -e $DEVICE/modules-5.15.67-flippy-76+o.tar.gz ]
+          [ -e $DEVICE/boot-$KERNEL_VERSION.tar.gz ]
+          [ -e $DEVICE/dtb-amlogic-$KERNEL_VERSION.tar.gz ]
+          [ -e $DEVICE/header-$KERNEL_VERSION.tar.gz ]
+          [ -e $DEVICE/modules-$KERNEL_VERSION.tar.gz ]
 
       - name: 删除ubuntu没有软件
         env:
@@ -109,13 +110,17 @@ jobs:
       - name: Prepare artifact
         run: |
           cd openwrt
+          mkdir -p ./artifact/rootfs
           mkdir -p ./artifact/firmware
-          mkdir -p ./artifact/package
           mkdir -p ./artifact/buildinfo
-          rm -rf $(find ./bin/targets/ -type d -name "packages")
-          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
-          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz"") ./artifact/rootfs
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+
+      - name: Deliver targets
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_targets
+          path: ./openwrt/bin/targets/
 
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v2
@@ -123,33 +128,31 @@ jobs:
           name: OpenWrt_buildinfo
           path: ./openwrt/artifact/buildinfo/
 
-      - name: Deliver package
-        uses: actions/upload-artifact@v2
-        with:
-          name: OpenWrt_package
-          path: ./openwrt/artifact/package/
-
       - name: Deliver rootfs
         uses: actions/upload-artifact@v2
         with:
           name: OpenWrt_rootfs
-          path: ./openwrt/bin/targets/
+          path: ./openwrt/artifact/rootfs
 
       - name: 打包
         run: |
-          sudo mkdir -p /opt/kernel
-          sudo cp $GITHUB_WORKSPACE/$DEVICE/*.tar.gz /opt/kernel
+          sudo su
+          mkdir -p /opt/kernel
+          cp $GITHUB_WORKSPACE/$DEVICE/*.tar.gz /opt/kernel
           cd /opt
-          sudo git clone https://github.com/unifreq/openwrt_packit
-          sudo cp $GITHUB_WORKSPACE/openwrt/artifact/firmware/*rootfs.tar.gz openwrt_packit
+          git clone https://github.com/unifreq/openwrt_packit
+          cp $GITHUB_WORKSPACE/openwrt/artifact/firmware/*rootfs.tar.gz openwrt_packit
           cd openwrt_packit
-          sudo bash ./mk_s905d_n1.sh
+          echo "WHOAMI=lituo" >> whoami
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
+          ./mk_s905d_n1.sh
           cd output
-          sudo gzip *.img
-          sudo cp -rf *.gz ./artifact/firmware/
+          gzip *.img
+          cp -rf *.gz ./artifact/firmware/
       
       - name: Deliver firmware
         uses: actions/upload-artifact@v2
         with:
           name: OpenWrt_firmware
           path: ./openwrt/artifact/firmware/
+
