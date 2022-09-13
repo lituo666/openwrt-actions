@@ -20,4 +20,7 @@ git clone --depth=1 https://github.com/destan19/OpenAppFilter.git ./package/Open
 git clone --depth=1 https://github.com/sbwml/luci-app-alist ./package/alist
 git clone --depth=1 https://github.com/ophub/luci-app-amlogic package/luci-app-amlogic
 
+rm -rf package/lean/luci-theme-argon
+git clone https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
+
 echo "运行diy-part2.sh"
