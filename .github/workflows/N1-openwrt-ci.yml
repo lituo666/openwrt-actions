@@ -137,19 +137,18 @@ jobs:
 
       - name: 打包
         run: |
-          sudo su
-          mkdir -p /opt/kernel
-          cp $GITHUB_WORKSPACE/$DEVICE/*.tar.gz /opt/kernel
-          cd /opt
-          git clone https://github.com/unifreq/openwrt_packit
-          cp $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
-          cd openwrt_packit
-          echo "WHOAMI=lituo" >> whoami
-          echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
-          ./mk_s905d_n1.sh
-          cd output
-          gzip *.img
-          cp -rf *.gz ./artifact/firmware/
+          sudo mkdir -p /opt/kernel
+          sudo cp $GITHUB_WORKSPACE/$DEVICE/*.tar.gz /opt/kernel
+          sudo cd /opt
+          sudo git clone https://github.com/unifreq/openwrt_packit
+          sudo cp $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
+          sudo cd openwrt_packit
+          sudo echo "WHOAMI=lituo" >> whoami
+          sudo echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
+          sudo bash ./mk_s905d_n1.sh
+          sudo cd output
+          sudo gzip *.img
+          sudo cp -rf *.gz ./artifact/firmware/
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
       
       - name: Deliver firmware
