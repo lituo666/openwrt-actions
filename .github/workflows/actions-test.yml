@@ -1,30 +1,20 @@
-# 
-# <https://github.com/KFERMercer/OpenWrt-CI>
-#
-# Copyright (C) 2019 P3TERX
-#
-# Copyright (C) 2020 KFERMercer
-#
-name: actions 测试
-
-on:
-  workflow_dispatch:
+name: SSH Tunnel
+on: 
   push:
+    paths:
+      - '.github\workflows\actions-test.yml'
 
 jobs:
-
-  actions-test:
-    name: actions-test
-
-    runs-on: ubuntu-latest  # 运行所需要的虚拟机环境
-
+  deploy:
+    name: Set up tunnel
+    runs-on: ubuntu-20.04
     steps:
-
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: main     # 仓库分支名字
-
-      - name: 测试命令
-        run: |
-          ping op.lituo.xyz -c 10
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Setup tunnel
+      uses: joshlarsen/ssh-tunnel-action@main
+      with:
+        timeout: 5h
+        ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+        ngrok_token: ${{ secrets.NGROK_TOKEN }}
