@@ -1,8 +1,8 @@
 name: SSH Tunnel
 on: 
+  workflow_dispatch:
   push:
-    paths:
-      - '.github\workflows\actions-test.yml'
+  
 
 jobs:
   deploy:
