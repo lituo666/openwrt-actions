@@ -139,14 +139,14 @@ jobs:
         run: |
           sudo mkdir -p /opt/kernel
           sudo cp $GITHUB_WORKSPACE/$DEVICE/*.tar.gz /opt/kernel
-          sudo cd /opt
+          cd /opt
           sudo git clone https://github.com/unifreq/openwrt_packit
           sudo cp $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
-          sudo cd openwrt_packit
+          cd openwrt_packit
           sudo echo "WHOAMI=lituo" >> whoami
           sudo echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
           sudo bash ./mk_s905d_n1.sh
-          sudo cd output
+          cd output
           sudo gzip *.img
           sudo cp -rf *.gz ./artifact/firmware/
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
