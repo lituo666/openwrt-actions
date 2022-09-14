@@ -113,6 +113,7 @@ jobs:
           mkdir -p ./artifact/rootfs
           mkdir -p ./artifact/firmware
           mkdir -p ./artifact/buildinfo
+          rm -rf $(find ./bin/targets/ -type f -name "openwrt-armvirt-64-Image*")
           cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz") ./artifact/rootfs
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
@@ -141,7 +142,7 @@ jobs:
           cp $GITHUB_WORKSPACE/$DEVICE/*.tar.gz /opt/kernel
           cd /opt
           git clone https://github.com/unifreq/openwrt_packit
-          cp $GITHUB_WORKSPACE/openwrt/artifact/firmware/*rootfs.tar.gz openwrt_packit
+          cp $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
           cd openwrt_packit
           echo "WHOAMI=lituo" >> whoami
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
