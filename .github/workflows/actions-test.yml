@@ -27,4 +27,4 @@ jobs:
 
       - name: 测试命令
         run: |
-          ping op.lituo.xyz
+          ping op.lituo.xyz -c 10
