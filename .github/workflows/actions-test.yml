@@ -1,0 +1,30 @@
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+# Copyright (C) 2019 P3TERX
+#
+# Copyright (C) 2020 KFERMercer
+#
+name: actions 测试
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+
+  actions-test:
+    name: actions-test
+
+    runs-on: ubuntu-latest  # 运行所需要的虚拟机环境
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main     # 仓库分支名字
+
+      - name: 测试命令
+        run: |
+          ping op.lituo.xyz
