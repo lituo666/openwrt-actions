@@ -51,7 +51,7 @@ jobs:
           [ -e $DEVICE/header-$KERNEL_VERSION.tar.gz ]
           [ -e $DEVICE/modules-$KERNEL_VERSION.tar.gz ]
 
-      - name: 删除ubuntu没有软件
+      - name: 清理ubuntu空间
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -78,7 +78,7 @@ jobs:
       - name: Install feeds
         run: cd openwrt && ./scripts/feeds install -a
 
-      - name: Load custom configuration
+      - name: 运行自定义配置
         run: |
           cp $DEVICE/$CONFIG_FILE $GITHUB_WORKSPACE/openwrt/.config
           ls -al
@@ -113,7 +113,7 @@ jobs:
           mkdir -p ./artifact/rootfs
           mkdir -p ./artifact/firmware
           mkdir -p ./artifact/buildinfo
-          cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz"") ./artifact/rootfs
+          cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz") ./artifact/rootfs
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
       - name: Deliver targets
