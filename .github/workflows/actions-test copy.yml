@@ -176,7 +176,7 @@ jobs:
           sudo cp $GITHUB_WORKSPACE/${{ matrix.PLATFORM }}/*.tar.gz /opt/kernel
           cd /opt
           sudo git clone https://github.com/unifreq/openwrt_packit
-          sudo mv $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
+          sudo cp $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
           cd openwrt_packit
           sudo echo "WHOAMI=lituo" >> whoami
           sudo echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
@@ -188,20 +188,20 @@ jobs:
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_buildinfo
+          name: OpenWrt_buildinfo_${{ matrix.PLATFORM }}
           path: ./openwrt/artifact/buildinfo/
 
       - name: Deliver rootfs (n1)
         if: matrix.PLATFORM == 'n1'
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_rootfs
+          name: OpenWrt_rootfs_${{ matrix.PLATFORM }}
           path: ./openwrt/artifact/rootfs
 
       - name: Deliver firmware
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_firmware${{ env.FILE_DATE }}
+          name: OpenWrt_firmware_${{ matrix.PLATFORM }}
           path: ./openwrt/artifact/firmware/
 
       - name: Release
