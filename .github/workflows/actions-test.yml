@@ -57,13 +57,22 @@ jobs:
   chuli:
     name: 处理输入
     runs-on: ubuntu-latest
-
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: 测试
-        run: |
-          echo "GITHUB_ENV: $GITHUB_ENV"
-          echo "DIY_P2_SH=diy-part3.sh" >> $GITHUB_ENV
-          echo "GITHUB_ENV: $GITHUB_ENV"
+    - name: 编译 x64
+      if: openwrt_x64 == true
+      run: |
+        matrix_x64_str=\"PLATFORM\":\"x64\"
+    - id: set-matrix
+      run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+
+
+    - name: 测试
+      run: |
+        echo "GITHUB_ENV: $GITHUB_ENV"
+        echo "DIY_P2_SH=diy-part3.sh" >> $GITHUB_ENV
+        echo "GITHUB_ENV: $GITHUB_ENV"
 
   build_openwrt:
     name: Build OpenWrt firmware
