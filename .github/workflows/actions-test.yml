@@ -16,4 +16,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: 测试
+          body: 更新测试文本  哈哈哈
           files: Release.txt
