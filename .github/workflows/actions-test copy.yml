@@ -57,4 +57,5 @@ jobs:
     steps:
       - name: dddd
         run: |
-          echo "${{ matrix.test }}"
+          echo "project:${{ matrix.project }}"
+          echo "config:${{ matrix.config }}"
