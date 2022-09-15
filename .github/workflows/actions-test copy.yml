@@ -1,0 +1,79 @@
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+# Copyright (C) 2019 P3TERX
+#
+# Copyright (C) 2020 KFERMercer
+#
+name: openwrt-ci-test
+
+on: 
+  workflow_dispatch:
+    inputs:
+      openwrt_x64:
+        description: "是否编译x64"
+        required: true
+        default: true
+        type: boolean
+      openwrt_r68s:
+        description: "是否编译r68s"
+        required: true
+        default: false
+        type: boolean
+      openwrt_r66s:
+        description: "是否编译r66s"
+        required: true
+        default: false
+        type: boolean
+      openwrt_n1:
+        description: "是否编译n1"
+        required: true
+        default: false
+        type: boolean
+      upload_release:
+        description: "是否更新到release"
+        required: true
+        default: false
+        type: boolean
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  KERNEL_VERSION: 5.15.67-flippy-76+o # 打包时的内核版本
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: false
+  TZ: Asia/Shanghai
+
+jobs:
+  job1:
+    name: 生成 matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: 处理需要编译的设备
+      id: set-matrix
+      run: |
+        if [ "${{ inputs.openwrt_x64 }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"x64\"}";fi
+        if [ "${{ inputs.openwrt_r68s }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"r68s\"}";fi
+        if [ "${{ inputs.openwrt_r66s }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"r66s\"}";fi
+        if [ "${{ inputs.openwrt_n1 }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"n1\"}";fi
+        form_str=${form_str: 1}
+        echo "form_str=$form_str"
+        echo "::set-output name=matrix::{\"include\":[${form_str}]}"
+        
+  build_openwrt:
+    name: Build OpenWrt firmware
+    needs: job1
+    permissions:
+      contents: write # for release creation
+  
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.job1.outputs.matrix)}}
+    steps:
+      - name: dddd
+        run: |
+          echo "PLATFORM:${{ matrix.PLATFORM }}"

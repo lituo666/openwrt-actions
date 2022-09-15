@@ -1,0 +1,146 @@
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+# Copyright (C) 2019 P3TERX
+#
+# Copyright (C) 2020 KFERMercer
+#
+name: openwrt-ci
+
+on: 
+  workflow_dispatch:
+    inputs:
+      openwrt_xx:
+        description: "编译那些，例如：x64,r66s,r68s"
+        required: true
+        default: "x64"
+        type: string
+      openwrt_x64:
+        description: "是否编译x64"
+        required: true
+        default: true
+        type: boolean
+      openwrt_r68s:
+        description: "是否编译r68s"
+        required: true
+        default: false
+        type: boolean
+      upload_r66s:
+        description: "是否编译r66s"
+        required: true
+        default: false
+        type: boolean
+      upload_n1:
+        description: "是否编译n1"
+        required: true
+        default: false
+        type: boolean
+      upload_release:
+        description: "是否更新到release"
+        required: true
+        default: false
+        type: boolean
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  DEVICE: N1
+  CONFIG_FILE: N1.config.buildinfo
+  KERNEL_VERSION: 5.15.67-flippy-76+o # 打包时的内核版本
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: false
+  TZ: Asia/Shanghai
+
+jobs:
+
+  chuli:
+    name: 处理输入
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: 编译 x64
+      if: openwrt_x64 == true
+      run: |
+        matrix_x64_str=\"PLATFORM\":\"x64\"
+    - id: set-matrix
+      run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+
+
+    - name: 测试
+      run: |
+        echo "GITHUB_ENV: $GITHUB_ENV"
+        echo "DIY_P2_SH=diy-part3.sh" >> $GITHUB_ENV
+        echo "GITHUB_ENV: $GITHUB_ENV"
+
+  build_openwrt:
+    name: Build OpenWrt firmware
+    permissions:
+      contents: write # for release creation
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        PLATFORM: ${{openwrt_xx}}
+
+    runs-on: ubuntu-latest  # 运行所需要的虚拟机环境
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main     # 仓库分支名字
+
+      - name: 检查必要文件
+        env:
+          PLATFORM: ${{ matrix.PLATFORM }}
+        run: |
+          echo "检查必要文件 $PLATFORM"
+          echo "GITHUB_ENV: $GITHUB_ENV"
+
+      - name: 清理ubuntu空间
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          echo "清理空间 $PLATFORM"
+
+      - name: Clone lede 源码
+        run: |
+          echo "clone 源码"
+
+      - name: Update feeds
+        run: |
+          echo "Update feeds"
+
+      - name: Install feeds
+        run: |
+          echo "Install feeds"
+
+      - name: 运行自定义配置
+        run: |
+          echo "运行自定义配置"
+
+      - name: Make download
+        run: |
+          echo "Make download"
+
+      - name: Compile firmware
+        run: |
+          echo "Compile firmware"
+
+      - name: Prepare artifact
+        run: |
+          echo "Prepare artifact"
+
+      - name: 打包
+        run: |
+          echo "N1 打包"
+
+      - name: Upload release asset
+        if: github.event.inputs.upload_release == 'true' && !cancelled()
+        run: |
+          echo "Upload release asset"
+
+
