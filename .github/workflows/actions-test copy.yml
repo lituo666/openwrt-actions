@@ -49,9 +49,9 @@ jobs:
     steps:
     - name: 处理输入
       run: |
-        if ${{ inputs.openwrt_x64 }};then echo "编译x64";fi
-        if ${{ inputs.openwrt_r68s }};then echo "编译r68s";fi
-        if ${{ inputs.openwrt_r66s }};then echo "编译r68s";fi
+        if [ "${{ inputs.openwrt_x64 }}" == true ];then echo "编译x64";fi
+        if [ "${{ inputs.openwrt_r68s }}" == true ];then echo "编译r68s";fi
+        if [ "${{ inputs.openwrt_r68s }}" == true ];then echo "编译r68s";fi
     
     - id: set-matrix
       run: echo "::set-output name=matrix::{\"include\":[{\"PLATFORM\":\"x64\"},{\"PLATFORM\":\"x64\"}]}"
