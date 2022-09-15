@@ -1,4 +1,12 @@
-name: SSH Tunnel
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+# Copyright (C) 2019 P3TERX
+#
+# Copyright (C) 2020 KFERMercer
+#
+name: openwrt-ci
+
 on: 
   workflow_dispatch:
     inputs:
@@ -13,35 +21,86 @@ on:
           - R68S
           - R68S
           - N1
+      upload_release:
+        description: "是否更新到release"
+        required: true
+        default: false
+        type: boolean
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+  DEVICE: N1
+  CONFIG_FILE: N1.config.buildinfo
+  KERNEL_VERSION: 5.15.67-flippy-76+o # 打包时的内核版本
+  DIY_P1_SH: diy-part1.sh
+  DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: false
+  TZ: Asia/Shanghai
 
 jobs:
-  deploy:
-    name: Set up tunnel
-    runs-on: ubuntu-20.04
+
+  build_openwrt:
+
+    permissions:
+      contents: write # for release creation
+
+    name: Build OpenWrt firmware
+
+    runs-on: ubuntu-latest  # 运行所需要的虚拟机环境
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main     # 仓库分支名字
+
+      - name: 检查必要文件
+        run: |
+          echo "检查必要文件"
+
+      - name: 清理ubuntu空间
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          echo "清理空间"
+
+      - name: Clone lede 源码
+        run: |
+          echo "clone 源码"
+
+      - name: Update feeds
+        run: |
+          echo "Update feeds"
+
+      - name: Install feeds
+        run: |
+          echo "Install feeds"
+
+      - name: 运行自定义配置
+        run: |
+          echo "运行自定义配置"
+
+      - name: Make download
+        run: |
+          echo "Make download"
+
+      - name: Compile firmware
+        run: |
+          echo "Compile firmware"
+
+      - name: Prepare artifact
+        run: |
+          echo "Prepare artifact"
+
+      - name: 打包
+        run: |
+          echo "N1 打包"
+
+      - name: Upload release asset
+        if: github.event.inputs.upload_release == 'true' && !cancelled()
+        run: |
+          echo "Upload release asset"
 
 
-
-#    - name: 清理ubuntu空间
-#      env:
-#        DEBIAN_FRONTEND: noninteractive
-#      run: |
-#        sudo timedatectl set-timezone Asia/Shanghai
-#        df -h
-#        docker rmi `docker images -q`
-#        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-#        sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
-#        sudo -E apt-get update
-#        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler antlr3 gperf swig
-#        sudo -E apt-get -y autoremove --purge
-#        sudo -E apt-get clean
-#        df -h
-#      
-#    - name: Setup tunnel
-#      uses: joshlarsen/ssh-tunnel-action@main
-#      with:
-#        timeout: 5h
-#        ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
-#        ngrok_token: ${{ secrets.NGROK_TOKEN }}
