@@ -49,10 +49,13 @@ jobs:
     steps:
     - name: 处理输入
       run: |
-        if [ "${{ inputs.openwrt_x64 }}" == true ];then echo "编译x64";fi
-        if [ "${{ inputs.openwrt_r68s }}" == true ];then echo "编译r68s";fi
-        if [ "${{ inputs.openwrt_r68s }}" == true ];then echo "编译r68s";fi
-    
+
+        if [ "${{ inputs.openwrt_x64 }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"x64\"}";fi
+        if [ "${{ inputs.openwrt_r68s }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"r68s\"}";fi
+        if [ "${{ inputs.openwrt_r66s }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"r66s\"}";fi
+        if [ "${{ inputs.openwrt_n1 }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"n1\"}";fi
+        form_str=${form_str: 1}
+        echo $form_str
     - id: set-matrix
       run: echo "::set-output name=matrix::{\"include\":[{\"PLATFORM\":\"x64\"},{\"PLATFORM\":\"x64\"}]}"
   job2:
