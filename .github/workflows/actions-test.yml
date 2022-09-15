@@ -50,11 +50,14 @@ env:
 jobs:
 
   build_openwrt:
-
+    name: Build OpenWrt firmware
     permissions:
       contents: write # for release creation
-
-    name: Build OpenWrt firmware
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        PLATFORM: [ rockchip/armv8, x86/64, armvirt/64 ]
 
     runs-on: ubuntu-latest  # 运行所需要的虚拟机环境
 
@@ -66,14 +69,16 @@ jobs:
           ref: main     # 仓库分支名字
 
       - name: 检查必要文件
+        env:
+          PLATFORM: ${{ matrix.PLATFORM }}
         run: |
-          echo "检查必要文件"
+          echo "检查必要文件 $PLATFORM"
 
       - name: 清理ubuntu空间
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          echo "清理空间"
+          echo "清理空间 $PLATFORM"
 
       - name: Clone lede 源码
         run: |
