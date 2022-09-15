@@ -47,8 +47,14 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
+    - name: 处理输入
+      run: |
+        if ${{ inputs.openwrt_x64 }};then echo "编译x64";fi
+        if ${{ inputs.openwrt_r68s }};then echo "编译r68s";fi
+        if ${{ inputs.openwrt_r66s }};then echo "编译r68s";fi
+    
     - id: set-matrix
-      run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+      run: echo "::set-output name=matrix::{\"include\":[{\"PLATFORM\":\"x64\"},{\"PLATFORM\":\"x64\"}]}"
   job2:
     needs: job1
     runs-on: ubuntu-latest
@@ -57,5 +63,4 @@ jobs:
     steps:
       - name: dddd
         run: |
-          echo "project:${{ matrix.project }}"
-          echo "config:${{ matrix.config }}"
+          echo "PLATFORM:${{ matrix.PLATFORM }}"
