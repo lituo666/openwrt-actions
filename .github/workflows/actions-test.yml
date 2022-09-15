@@ -15,10 +15,11 @@ jobs:
           cat Release.txt
           sudo timedatectl set-timezone Asia/Shanghai
           echo "Release_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          touch aa.txt
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ env.Release_DATE }}_name
-          tag_name: ${{ env.Release_DATE }}_tag_name
+          name: 测试
+          tag_name: 测试
           body: ${{ env.Release_DATE }}  哈哈哈
-          files: Release.txt
+          files: aa.txt
