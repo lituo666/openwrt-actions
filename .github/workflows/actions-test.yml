@@ -15,4 +15,5 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: 测试
           files: Release.txt
