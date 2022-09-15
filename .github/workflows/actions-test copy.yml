@@ -212,3 +212,4 @@ jobs:
           tag_name: ${{needs.job1.outputs.start_date}}
           body: ${{needs.job1.outputs.form_str}} 
           files: ./openwrt/artifact/firmware/*.img.gz
+          
