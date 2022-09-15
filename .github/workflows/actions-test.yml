@@ -10,17 +10,26 @@ name: openwrt-ci
 on: 
   workflow_dispatch:
     inputs:
-      openwrt_soc:
-        description: "选择编译的设备"
+      openwrt_x64:
+        description: "是否编译x64"
         required: true
-        default: "all"
-        type: choice
-        options:
-          - all
-          - X64
-          - R68S
-          - R68S
-          - N1
+        default: true
+        type: boolean
+      openwrt_r68s:
+        description: "是否编译r68s"
+        required: true
+        default: false
+        type: boolean
+      upload_r66s:
+        description: "是否编译r66s"
+        required: true
+        default: false
+        type: boolean
+      upload_n1:
+        description: "是否编译n1"
+        required: true
+        default: false
+        type: boolean
       upload_release:
         description: "是否更新到release"
         required: true
