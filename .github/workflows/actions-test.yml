@@ -11,10 +11,13 @@ jobs:
       - name: Build
         run: echo ${{ github.sha }} > Release.txt
       - name: Test
-        run: cat Release.txt
+        run: | 
+          cat Release.txt
+          sudo timedatectl set-timezone Asia/Shanghai
+          echo "Release_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: 测试
-          body: 更新测试文本  哈哈哈
+          tag_name: ${{ env.Release_DATE }}
+          body: ${{ env.Release_DATE }}  哈哈哈
           files: Release.txt
