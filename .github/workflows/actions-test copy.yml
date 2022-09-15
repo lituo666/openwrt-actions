@@ -10,11 +10,6 @@ name: openwrt-ci-test
 on: 
   workflow_dispatch:
     inputs:
-      openwrt_xx:
-        description: "编译那些，例如：x64,r66s,r68s"
-        required: true
-        default: "x64"
-        type: string
       openwrt_x64:
         description: "是否编译x64"
         required: true
@@ -25,12 +20,12 @@ on:
         required: true
         default: false
         type: boolean
-      upload_r66s:
+      openwrt_r66s:
         description: "是否编译r66s"
         required: true
         default: false
         type: boolean
-      upload_n1:
+      openwrt_n1:
         description: "是否编译n1"
         required: true
         default: false
