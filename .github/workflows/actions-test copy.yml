@@ -51,6 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      start_date: ${{ steps.set-matrix.outputs.start_date }}
+      form_str: ${{ steps.set-matrix.outputs.form_str }}
     steps:
     - name: 处理需要编译的设备
       id: set-matrix
@@ -62,6 +64,8 @@ jobs:
         form_str=${form_str: 1}
         echo "form_str=$form_str"
         echo "::set-output name=matrix::{\"include\":[${form_str}]}"
+        echo "::set-output name=start_date::$(date +"%Y%m%d%H%M%S")"
+        echo "::set-output name=form_str::$form_str"
         
   build_openwrt:
     name: Build OpenWrt firmware
@@ -74,9 +78,6 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.job1.outputs.matrix)}}
     steps:
-      - name: dddd
-        run: |
-          echo "PLATFORM:${{ matrix.PLATFORM }}"
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -171,7 +172,18 @@ jobs:
       - name: 打包 (n1)
         if: matrix.PLATFORM == 'n1'
         run: |
-          echo "打包"
+          sudo mkdir -p /opt/kernel
+          sudo cp $GITHUB_WORKSPACE/${{ matrix.PLATFORM }}/*.tar.gz /opt/kernel
+          cd /opt
+          sudo git clone https://github.com/unifreq/openwrt_packit
+          sudo mv $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
+          cd openwrt_packit
+          sudo echo "WHOAMI=lituo" >> whoami
+          sudo echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
+          sudo bash ./mk_s905d_n1.sh
+          cd output
+          sudo gzip *.img
+          sudo cp -rf *.gz $GITHUB_WORKSPACE/openwrt/artifact/firmware/
 
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v2
@@ -192,7 +204,11 @@ jobs:
           name: OpenWrt_firmware${{ env.FILE_DATE }}
           path: ./openwrt/artifact/firmware/
 
-      - name: Upload release asset
+      - name: Release
         if: inputs.upload_release == 'true' && !cancelled()
-        run: |
-          echo "Upload release asset"
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{needs.job1.outputs.start_date}}
+          tag_name: ${{needs.job1.outputs.start_date}}
+          body: ${{needs.job1.outputs.form_str}} 
+          files: ./openwrt/artifact/firmware/*.img.gz
