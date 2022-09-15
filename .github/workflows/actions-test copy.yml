@@ -48,16 +48,16 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: 处理输入
+      id: set-matrix
       run: |
 
-        if [ "${{ inputs.openwrt_x64 }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"x64\"}";fi
-        if [ "${{ inputs.openwrt_r68s }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"r68s\"}";fi
-        if [ "${{ inputs.openwrt_r66s }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"r66s\"}";fi
-        if [ "${{ inputs.openwrt_n1 }}" == true ];then form_str="$form_str,{\"PLATFORM\":\"n1\"}";fi
+        if [ "${{ inputs.openwrt_x64 }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"x64\"}";fi
+        if [ "${{ inputs.openwrt_r68s }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"r68s\"}";fi
+        if [ "${{ inputs.openwrt_r66s }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"r66s\"}";fi
+        if [ "${{ inputs.openwrt_n1 }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"n1\"}";fi
         form_str=${form_str: 1}
         echo $form_str
-    - id: set-matrix
-      run: echo "::set-output name=matrix::{\"include\":[{\"PLATFORM\":\"x64\"},{\"PLATFORM\":\"x64\"}]}"
+        echo "::set-output name=matrix::{\"include\":[${form_str}]}"
   job2:
     needs: job1
     runs-on: ubuntu-latest
