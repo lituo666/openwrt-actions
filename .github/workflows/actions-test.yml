@@ -15,7 +15,7 @@ jobs:
           cat Release.txt
           sudo timedatectl set-timezone Asia/Shanghai
           echo "Release_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-          touch aa.txt
+          echo "fjalkdjflaskdjflkasjdflkasdf" >> aa.txt
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
