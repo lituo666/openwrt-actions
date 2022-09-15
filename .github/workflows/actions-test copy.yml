@@ -53,8 +53,7 @@ jobs:
     needs: job1
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
-        test: ${{fromJson(needs.job1.outputs.matrix)}}
+      matrix: ${{fromJson(needs.job1.outputs.matrix)}}
     steps:
       - name: dddd
         run: |
