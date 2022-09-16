@@ -19,7 +19,4 @@ git clone --depth=1 https://github.com/rufengsuixing/luci-app-adguardhome.git ./
 git clone --depth=1 https://github.com/destan19/OpenAppFilter.git ./package/OpenAppFilter
 git clone --depth=1 https://github.com/sbwml/luci-app-alist.git ./package/alist
 
-rm -rf package/lean/luci-theme-argon
-git clone https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
-
 echo "运行diy-part2.sh"
