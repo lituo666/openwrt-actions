@@ -1,8 +1,28 @@
-name: n1-openwrt-ci
+name: all-openwrt-ci
 
-on:
+on: 
   workflow_dispatch:
     inputs:
+      openwrt_x64:
+        description: "是否编译x64"
+        required: true
+        default: true
+        type: boolean
+      openwrt_r68s:
+        description: "是否编译r68s"
+        required: true
+        default: false
+        type: boolean
+      openwrt_r66s:
+        description: "是否编译r66s"
+        required: true
+        default: false
+        type: boolean
+      openwrt_n1:
+        description: "是否编译n1"
+        required: true
+        default: false
+        type: boolean
       upload_release:
         description: "是否更新到release"
         required: true
@@ -12,26 +32,45 @@ on:
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
-  DEVICE: n1
-  CONFIG_FILE: n1.config.buildinfo
   KERNEL_VERSION: 5.15.67-flippy-76+o # 打包时的内核版本
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
+  UPLOAD_BIN_DIR: false
   TZ: Asia/Shanghai
 
 jobs:
-
+  job1:
+    name: 生成 matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      start_date: ${{ steps.set-matrix.outputs.start_date }}
+      form_str: ${{ steps.set-matrix.outputs.form_str }}
+    steps:
+    - name: 处理需要编译的设备
+      id: set-matrix
+      run: |
+        if [ "${{ inputs.openwrt_x64 }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"x64\"}";fi
+        if [ "${{ inputs.openwrt_r68s }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"r68s\"}";fi
+        if [ "${{ inputs.openwrt_r66s }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"r66s\"}";fi
+        if [ "${{ inputs.openwrt_n1 }}" == "true" ];then form_str="$form_str,{\"PLATFORM\":\"n1\"}";fi
+        form_str=${form_str: 1}
+        echo "form_str=$form_str"
+        echo "::set-output name=matrix::{\"include\":[${form_str}]}"
+        echo "::set-output name=start_date::$(date +"%Y%m%d%H%M%S")"
+        echo "::set-output name=form_str::$form_str"
+        
   build_openwrt:
-
+    name: Build OpenWrt firmware
+    needs: job1
     permissions:
       contents: write # for release creation
-
-    name: Build OpenWrt firmware
-
-    runs-on: ubuntu-latest  # 运行所需要的虚拟机环境
-
+  
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.job1.outputs.matrix)}}
     steps:
-
       - name: 签出本仓库
         uses: actions/checkout@v2
         with:
@@ -39,13 +78,16 @@ jobs:
 
       - name: 检查必要文件
         run: |
-          [ -e $DEVICE/$CONFIG_FILE ]
-          [ -e $DEVICE/$DIY_P1_SH ]
-          [ -e $DEVICE/$DIY_P2_SH ]
-          [ -e $DEVICE/boot-$KERNEL_VERSION.tar.gz ]
-          [ -e $DEVICE/dtb-amlogic-$KERNEL_VERSION.tar.gz ]
-          [ -e $DEVICE/header-$KERNEL_VERSION.tar.gz ]
-          [ -e $DEVICE/modules-$KERNEL_VERSION.tar.gz ]
+          echo "检查必要文件"
+          [ -e ${{ matrix.PLATFORM }}/${{ matrix.PLATFORM }}.config.buildinfo ]
+          [ -e ${{ matrix.PLATFORM }}/$DIY_P1_SH ]
+          [ -e ${{ matrix.PLATFORM }}/$DIY_P2_SH ]
+          if [ "${{ matrix.PLATFORM }}" == "n1" ];then
+          [ -e ${{ matrix.PLATFORM }}/boot-$KERNEL_VERSION.tar.gz ]
+          [ -e ${{ matrix.PLATFORM }}/dtb-amlogic-$KERNEL_VERSION.tar.gz ]
+          [ -e ${{ matrix.PLATFORM }}/header-$KERNEL_VERSION.tar.gz ]
+          [ -e ${{ matrix.PLATFORM }}/modules-$KERNEL_VERSION.tar.gz ]
+          fi
 
       - name: 对ubuntu清理空间和安装依赖软件
         env:
@@ -70,18 +112,20 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
 
       - name: Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
-
+        run: |
+          cd openwrt && ./scripts/feeds update -a
+          
       - name: Install feeds
-        run: cd openwrt && ./scripts/feeds install -a
+        run: |
+          cd openwrt && ./scripts/feeds install -a
 
       - name: 加载配置文件
         run: |
-          cp $DEVICE/$CONFIG_FILE $GITHUB_WORKSPACE/openwrt/.config
+          cp ${{ matrix.PLATFORM }}/${{ matrix.PLATFORM }}.config.buildinfo $GITHUB_WORKSPACE/openwrt/.config
           ls -al
-          chmod +x $DEVICE/$DIY_P2_SH
+          chmod +x ${{ matrix.PLATFORM }}/$DIY_P2_SH
           cd openwrt
-          bash $GITHUB_WORKSPACE/$DEVICE/$DIY_P2_SH
+          bash $GITHUB_WORKSPACE/${{ matrix.PLATFORM }}/$DIY_P2_SH
           ls -al package
           make defconfig
 
@@ -103,42 +147,28 @@ jobs:
           du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
-          echo "FILE_DATE=$(date +"%Y%m%d%H%M%S")" >> $GITHUB_ENV
 
       - name: Prepare artifact
         run: |
-          ls -al
           cd openwrt
           mkdir -p ./artifact/rootfs
           mkdir -p ./artifact/firmware
           mkdir -p ./artifact/buildinfo
           rm -rf $(find ./bin/targets/ -type d -name "packages")
+          if [ "${{ matrix.PLATFORM }}" == "n1" ]; then
           rm -rf $(find ./bin/targets/ -type f -name "openwrt-armvirt-64-Image*")
           cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz") ./artifact/rootfs
+          else
+          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
+          fi
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
-#      - name: Deliver targets
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: OpenWrt_targets_armvirt_64_N1_${{ env.FILE_DATE }}
-#          path: ./openwrt/bin/targets/
 
-      - name: Deliver buildinfo
-        uses: actions/upload-artifact@v2
-        with:
-          name: OpenWrt_buildinfo_armvirt_64_N1_${{ env.FILE_DATE }}
-          path: ./openwrt/artifact/buildinfo/
-
-      - name: Deliver rootfs
-        uses: actions/upload-artifact@v2
-        with:
-          name: OpenWrt_rootfs_armvirt_64_N1_${{ env.FILE_DATE }}
-          path: ./openwrt/artifact/rootfs
-
-      - name: 打包
+      - name: 打包 (n1)
+        if: matrix.PLATFORM == 'n1'
         run: |
           sudo mkdir -p /opt/kernel
-          sudo cp $GITHUB_WORKSPACE/$DEVICE/*.tar.gz /opt/kernel
+          sudo cp $GITHUB_WORKSPACE/${{ matrix.PLATFORM }}/*.tar.gz /opt/kernel
           cd /opt
           sudo git clone https://github.com/unifreq/openwrt_packit
           sudo cp $GITHUB_WORKSPACE/openwrt/artifact/rootfs/*rootfs.tar.gz openwrt_packit
@@ -147,21 +177,33 @@ jobs:
           sudo echo "KERNEL_VERSION=$KERNEL_VERSION" >> whoami
           sudo bash ./mk_s905d_n1.sh
           cd output
-          ls -al
           sudo gzip *.img
           sudo cp -rf *.gz $GITHUB_WORKSPACE/openwrt/artifact/firmware/
-      
+
+      - name: Deliver buildinfo
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_buildinfo_${{ matrix.PLATFORM }}
+          path: ./openwrt/artifact/buildinfo/
+
+      - name: Deliver rootfs (n1)
+        if: matrix.PLATFORM == 'n1'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_rootfs_${{ matrix.PLATFORM }}
+          path: ./openwrt/artifact/rootfs
+
       - name: Deliver firmware
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_firmware_armvirt_64_N1_${{ env.FILE_DATE }}
+          name: OpenWrt_firmware_${{ matrix.PLATFORM }}
           path: ./openwrt/artifact/firmware/
-      
+
       - name: Release
         if: inputs.upload_release == true && !cancelled()
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ env.FILE_DATE }}
-          tag_name: ${{ env.FILE_DATE }}
-          body: 斐讯n1，网关192.168.1.1，密码password\n将img文件烧录到U盘，然后插到左侧USB口，重新上电，本固件hdmi无输出。
+          name: ${{needs.job1.outputs.start_date}}
+          tag_name: ${{needs.job1.outputs.start_date}}
+          body: ${{needs.job1.outputs.form_str}} 
           files: ./openwrt/artifact/firmware/*.img.gz
