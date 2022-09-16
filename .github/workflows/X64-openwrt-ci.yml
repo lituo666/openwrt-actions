@@ -107,6 +107,7 @@ jobs:
           mkdir -p ./artifact/firmware
           mkdir -p ./artifact/buildinfo
           rm -rf $(find ./bin/targets/ -type d -name "packages")
+          rm -rf $(find ./bin/targets/ -type f -name "*rootfs.img.gz")
           cp -rf $(find ./bin/targets/ -type f -name "*.img.gz") ./artifact/firmware/
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
