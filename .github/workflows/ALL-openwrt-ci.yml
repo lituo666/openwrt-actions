@@ -155,14 +155,19 @@ jobs:
           mkdir -p ./artifact/firmware
           mkdir -p ./artifact/buildinfo
           rm -rf $(find ./bin/targets/ -type d -name "packages")
+
+          if [ "${{ matrix.PLATFORM }}" == "x64" ]; then
+          rm -rf $(find ./bin/targets/ -type f -name "*rootfs.img.gz")
+          fi
+
           if [ "${{ matrix.PLATFORM }}" == "n1" ]; then
           rm -rf $(find ./bin/targets/ -type f -name "openwrt-armvirt-64-Image*")
           cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz") ./artifact/rootfs
           else
           cp -rf $(find ./bin/targets/ -type f -name "*.img.gz") ./artifact/firmware/
           fi
-          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
+          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
       - name: 打包 (n1)
         if: matrix.PLATFORM == 'n1'
