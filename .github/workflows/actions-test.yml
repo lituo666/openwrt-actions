@@ -1,6 +1,13 @@
 name: Main
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      upload_release:
+        description: "是否更新到release"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -14,12 +21,13 @@ jobs:
         run: | 
           cat Release.txt
           sudo timedatectl set-timezone Asia/Shanghai
-          echo "Release_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          echo "Release_DATE=$(date +"%Y%m%d%H%M%S")" >> $GITHUB_ENV
           echo "fjalkdjflaskdjflkasjdflkasdf" >> aa.txt
       - name: Release
+        if: inputs.upload_release == true && !cancelled()
         uses: softprops/action-gh-release@v1
         with:
-          name: 测试
-          tag_name: 测试
-          body: ${{ env.Release_DATE }}  哈哈哈
-          files: aa.txt
+          name: ${{ env.Release_DATE }}
+          tag_name: ${{ env.Release_DATE }}
+          body: 嘿嘿 
+          files: Release.txt

@@ -206,7 +206,7 @@ jobs:
           path: ./openwrt/artifact/firmware/
 
       - name: Release
-        if: inputs.upload_release == 'true' && !cancelled()
+        if: inputs.upload_release == true && !cancelled()
         uses: softprops/action-gh-release@v1
         with:
           name: ${{needs.job1.outputs.start_date}}
