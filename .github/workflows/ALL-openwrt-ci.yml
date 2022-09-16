@@ -1,11 +1,4 @@
-# 
-# <https://github.com/KFERMercer/OpenWrt-CI>
-#
-# Copyright (C) 2019 P3TERX
-#
-# Copyright (C) 2020 KFERMercer
-#
-name: openwrt-ci-test
+name: all-openwrt-ci
 
 on: 
   workflow_dispatch:
@@ -78,10 +71,10 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.job1.outputs.matrix)}}
     steps:
-      - name: Checkout
+      - name: 签出本仓库
         uses: actions/checkout@v2
         with:
-          ref: main     # 仓库分支名字
+          ref: main     # 仓库分支
 
       - name: 检查必要文件
         run: |
@@ -96,7 +89,7 @@ jobs:
           [ -e ${{ matrix.PLATFORM }}/modules-$KERNEL_VERSION.tar.gz ]
           fi
 
-      - name: 清理ubuntu空间
+      - name: 对ubuntu清理空间和安装依赖软件
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -113,7 +106,7 @@ jobs:
           sudo -E apt-get clean
           df -h
 
-      - name: Clone lede 源码
+      - name: Clone lede openwrt 源码
         run: |
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH openwrt
@@ -126,7 +119,7 @@ jobs:
         run: |
           cd openwrt && ./scripts/feeds install -a
 
-      - name: 运行自定义配置
+      - name: 加载配置文件
         run: |
           cp ${{ matrix.PLATFORM }}/${{ matrix.PLATFORM }}.config.buildinfo $GITHUB_WORKSPACE/openwrt/.config
           ls -al
@@ -161,6 +154,7 @@ jobs:
           mkdir -p ./artifact/rootfs
           mkdir -p ./artifact/firmware
           mkdir -p ./artifact/buildinfo
+          rm -rf $(find ./bin/targets/ -type d -name "packages")
           if [ "${{ matrix.PLATFORM }}" == "n1" ]; then
           rm -rf $(find ./bin/targets/ -type f -name "openwrt-armvirt-64-Image*")
           cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz") ./artifact/rootfs
