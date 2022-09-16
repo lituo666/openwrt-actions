@@ -159,7 +159,7 @@ jobs:
           rm -rf $(find ./bin/targets/ -type f -name "openwrt-armvirt-64-Image*")
           cp -rf $(find ./bin/targets/ -type f -name "*rootfs.tar.gz") ./artifact/rootfs
           else
-          cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
+          cp -rf $(find ./bin/targets/ -type f -name "*.img.gz") ./artifact/firmware/
           fi
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
 
@@ -183,20 +183,20 @@ jobs:
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_buildinfo_${{ matrix.PLATFORM }}
+          name: OpenWrt_buildinfo_${{ matrix.PLATFORM }}_${{needs.job1.outputs.start_date}}
           path: ./openwrt/artifact/buildinfo/
 
       - name: Deliver rootfs (n1)
         if: matrix.PLATFORM == 'n1'
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_rootfs_${{ matrix.PLATFORM }}
+          name: OpenWrt_rootfs_${{ matrix.PLATFORM }}_${{needs.job1.outputs.start_date}}
           path: ./openwrt/artifact/rootfs
 
       - name: Deliver firmware
         uses: actions/upload-artifact@v2
         with:
-          name: OpenWrt_firmware_${{ matrix.PLATFORM }}
+          name: OpenWrt_firmware_${{ matrix.PLATFORM }}_${{needs.job1.outputs.start_date}}
           path: ./openwrt/artifact/firmware/
 
       - name: Release
