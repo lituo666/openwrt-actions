@@ -17,8 +17,8 @@ git clone --depth=1 https://github.com/fw876/helloworld.git ./package/helloworld
 git clone --depth=1 https://github.com/vernesong/OpenClash.git ./package/luci-app-openclash
 git clone --depth=1 https://github.com/rufengsuixing/luci-app-adguardhome.git ./package/luci-app-adguardhome
 git clone --depth=1 https://github.com/destan19/OpenAppFilter.git ./package/OpenAppFilter
-git clone --depth=1 https://github.com/sbwml/luci-app-alist ./package/alist
-git clone --depth=1 https://github.com/ophub/luci-app-amlogic package/luci-app-amlogic
+git clone --depth=1 https://github.com/sbwml/luci-app-alist.git ./package/alist
+git clone --depth=1 https://github.com/ophub/luci-app-amlogic.git package/luci-app-amlogic
 
 rm -rf package/lean/luci-theme-argon
 git clone https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
