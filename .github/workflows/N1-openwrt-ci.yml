@@ -163,5 +163,5 @@ jobs:
         with:
           name: ${{ env.FILE_DATE }}
           tag_name: ${{ env.FILE_DATE }}
-          body: 斐讯n1，网关192.168.1.1，密码password\n将img文件烧录到U盘，然后插到左侧USB口，重新上电，本固件hdmi无输出。
+          body: 斐讯n1，网关192.168.1.1，密码password\n将img文件烧录到U盘，然后插到左侧USB口，重新上电。
           files: ./openwrt/artifact/firmware/*.img.gz
