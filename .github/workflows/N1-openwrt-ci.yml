@@ -103,7 +103,7 @@ jobs:
           du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
-          echo "FILE_DATE=$(date +"%Y%m%d%H%M%S")" >> $GITHUB_ENV
+          echo "FILE_DATE=$(date +"%Y%m%d_%H%M%S")" >> $GITHUB_ENV
 
       - name: Prepare artifact
         run: |
