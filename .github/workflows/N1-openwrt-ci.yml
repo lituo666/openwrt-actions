@@ -14,7 +14,7 @@ env:
   REPO_BRANCH: master
   DEVICE: n1
   CONFIG_FILE: n1.config.buildinfo
-  KERNEL_VERSION: 5.15.67-flippy-76+o # 打包时的内核版本
+  KERNEL_VERSION: 5.15.68-flippy-76+o # 打包时的内核版本
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   TZ: Asia/Shanghai
