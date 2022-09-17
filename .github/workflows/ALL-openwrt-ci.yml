@@ -57,7 +57,7 @@ jobs:
         form_str=${form_str: 1}
         echo "form_str=$form_str"
         echo "::set-output name=matrix::{\"include\":[${form_str}]}"
-        echo "::set-output name=start_date::$(date +"%Y%m%d%H%M%S")"
+        echo "::set-output name=start_date::$(date +"%Y%m%d_%H%M%S")"
         echo "::set-output name=form_str::$form_str"
         
   build_openwrt:
