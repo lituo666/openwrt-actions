@@ -27,6 +27,7 @@ tar -zxvf package/luci-app-openclash/core-lateset/meta/clash-linux-armv8.tar.gz 
 mv package/luci-app-openclash/core-lateset/tmp/* package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core/clash_meta
 cp package/luci-app-openclash/core-lateset/premium/clash-linux-armv8-*.gz package/luci-app-openclash/core-lateset/tmp
 gzip -d package/luci-app-openclash/core-lateset/tmp/*
+chmod +x package/luci-app-openclash/core-lateset/tmp/*
 mv package/luci-app-openclash/core-lateset/tmp/* package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core/clash_tun
 ls package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core/
 
