@@ -3,9 +3,6 @@ name: Delete Workflow Runs
 on:
   workflow_dispatch:
 
-  schedule:
-    - cron: "0 0 * * *"
-
 jobs:
   del_runs:
     runs-on: ubuntu-latest
