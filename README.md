@@ -14,6 +14,7 @@
 Administration -> htop
 Network -> iperf3
 Network -> SSH -> openssh-sftp-server
+Network -> IP Addresses and Names -> ddns-scripts_cloudflare.com-v4
 Utilities -> Editors -> vim-full
 Utilities -> tree
 ```
