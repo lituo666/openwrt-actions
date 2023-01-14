@@ -22,10 +22,10 @@ git clone --depth=1 https://github.com/ophub/luci-app-amlogic.git package/luci-a
 
 mkdir -p package/luci-app-openclash/core-lateset/tmp
 mkdir -p package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core
-tar -zxf package/luci-app-openclash/core-lateset/dev/clash-linux-armv8.tar.gz -C package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core
-tar -zxf package/luci-app-openclash/core-lateset/meta/clash-linux-armv8.tar.gz -C package/luci-app-openclash/core-lateset/tmp
+tar -zxf package/luci-app-openclash/core-lateset/dev/clash-linux-arm64.tar.gz -C package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core
+tar -zxf package/luci-app-openclash/core-lateset/meta/clash-linux-arm64.tar.gz -C package/luci-app-openclash/core-lateset/tmp
 mv package/luci-app-openclash/core-lateset/tmp/* package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core/clash_meta
-cp package/luci-app-openclash/core-lateset/premium/clash-linux-armv8-*.gz package/luci-app-openclash/core-lateset/tmp
+cp package/luci-app-openclash/core-lateset/premium/clash-linux-arm64-*.gz package/luci-app-openclash/core-lateset/tmp
 gzip -d package/luci-app-openclash/core-lateset/tmp/*
 chmod +x package/luci-app-openclash/core-lateset/tmp/*
 mv package/luci-app-openclash/core-lateset/tmp/* package/luci-app-openclash/luci-app-openclash/root/etc/openclash/core/clash_tun
